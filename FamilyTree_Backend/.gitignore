@@ -1,0 +1,77 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+db.sqlite3
+db.sqlite3-journal
+
+# Django migrations
+**/migrations/**/ 
+!**/migrations/__init__.py
+
+# Private media files
+/media/
+
+# Environment variables
+.env
+.env.*
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+.virtualenv/
+
+# Pyenv
+.python-version
+
+# IDE files
+.vscode/
+.idea/
+
+# Testing
+coverage/
+*.cover
+.pytest_cache/
+.tox/
+nosetests.xml
+coverage.xml
+*.coveragerc
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Static files
+/static/
+staticfiles/
+static_root/
+
+# Local cache files
+*.DS_Store
+*.swp
+*.swo
+*.sass-cache
+*.eslintcache
+*.mo
+*.devenv
+*.egg-info/
+
+# Build files
+build/
+dist/
+*.egg
+*.egg-info
+*.whl
+pip-wheel-metadata/
+share/python-wheels/
