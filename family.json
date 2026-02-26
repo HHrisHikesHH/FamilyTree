@@ -1,0 +1,89 @@
+{
+  "familyName": "Our Family",
+  "people": [
+    {
+      "id": "p1",
+      "name": "Great Grandfather",
+      "nickname": "Pardada",
+      "gender": "male",
+      "birthYear": 1905,
+      "deathYear": 1972,
+      "birthPlace": "Pune",
+      "parentIds": [],
+      "spouseIds": ["p2"],
+      "notes": "The family patriarch. A hardworking farmer who built the foundation of our family."
+    },
+    {
+      "id": "p2",
+      "name": "Great Grandmother",
+      "nickname": "Pardadi",
+      "gender": "female",
+      "birthYear": 1910,
+      "deathYear": 1978,
+      "birthPlace": "Nashik",
+      "parentIds": [],
+      "spouseIds": ["p1"],
+      "notes": "Known across the village for her incredible cooking and warm hospitality."
+    },
+    {
+      "id": "p3",
+      "name": "Grandfather",
+      "nickname": "Dada",
+      "gender": "male",
+      "birthYear": 1935,
+      "deathYear": 2005,
+      "birthPlace": "Pune",
+      "parentIds": ["p1", "p2"],
+      "spouseIds": ["p4"],
+      "notes": "Started the family business and moved to the city. A visionary and a great storyteller."
+    },
+    {
+      "id": "p4",
+      "name": "Grandmother",
+      "nickname": "Dadi",
+      "gender": "female",
+      "birthYear": 1938,
+      "deathYear": null,
+      "birthPlace": "Mumbai",
+      "parentIds": [],
+      "spouseIds": ["p3"],
+      "notes": "Loved gardening and could name every plant in the garden. Still the heart of every family gathering."
+    },
+    {
+      "id": "p5",
+      "name": "Father",
+      "nickname": "Papa",
+      "gender": "male",
+      "birthYear": 1962,
+      "deathYear": null,
+      "birthPlace": "Pune",
+      "parentIds": ["p3", "p4"],
+      "spouseIds": ["p6"],
+      "notes": ""
+    },
+    {
+      "id": "p6",
+      "name": "Mother",
+      "nickname": "Mama",
+      "gender": "female",
+      "birthYear": 1965,
+      "deathYear": null,
+      "birthPlace": "Nagpur",
+      "parentIds": [],
+      "spouseIds": ["p5"],
+      "notes": ""
+    },
+    {
+      "id": "p7",
+      "name": "Me",
+      "nickname": "",
+      "gender": "male",
+      "birthYear": 1990,
+      "deathYear": null,
+      "birthPlace": "Pune",
+      "parentIds": ["p5", "p6"],
+      "spouseIds": [],
+      "notes": "The one who built this family tree! 🌳"
+    }
+  ]
+}

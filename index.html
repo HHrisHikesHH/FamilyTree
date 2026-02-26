@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌳 Our Family Tree</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --coral:   #FF6B6B;
+    --teal:    #26C6DA;
+    --purple:  #AB47BC;
+    --blue:    #42A5F5;
+    --green:   #66BB6A;
+    --amber:   #FFCA28;
+    --pink:    #EC407A;
+    --indigo:  #5C6BC0;
+    --bg:      #FFF8F0;
+    --card-bg: #FFFFFF;
+    --text:    #2D2D2D;
+    --muted:   #888;
+    --shadow:  0 4px 24px rgba(0,0,0,0.10);
+    --radius:  18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── Colorful blobs ─── */
+  .blob-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  }
+  .blob {
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.18;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .blob-1 { width:500px; height:500px; background:var(--coral);  top:-120px; left:-100px; animation-delay:0s; }
+  .blob-2 { width:400px; height:400px; background:var(--teal);   top:60%;   right:-80px; animation-delay:-4s; }
+  .blob-3 { width:350px; height:350px; background:var(--purple); bottom:-100px; left:35%; animation-delay:-7s; }
+  .blob-4 { width:300px; height:300px; background:var(--amber);  top:30%;   left:20%;   animation-delay:-2s; }
+  @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(40px,30px) scale(1.08)} }
+
+  /* ─── Lock Screen ─── */
+  #lockScreen {
+    position: fixed; inset: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+  }
+  .lock-card {
+    background: white; border-radius: 28px; padding: 48px 52px;
+    text-align: center; box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+    max-width: 400px; width: 90%;
+  }
+  .lock-card h1 { font-family:'Pacifico',cursive; font-size:2rem; margin-bottom:8px;
+    background:linear-gradient(90deg,var(--coral),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .lock-card p { color:var(--muted); margin-bottom:28px; font-size:1rem; }
+  .lock-input {
+    width:100%; padding:14px 18px; border:2px solid #eee; border-radius:14px;
+    font-family:'Nunito',sans-serif; font-size:1.1rem; outline:none; text-align:center;
+    letter-spacing:4px; transition:border-color 0.2s;
+  }
+  .lock-input:focus { border-color:var(--purple); }
+  .lock-btn {
+    width:100%; margin-top:16px; padding:14px;
+    background:linear-gradient(135deg,var(--coral),var(--purple));
+    color:white; border:none; border-radius:14px; font-family:'Nunito',sans-serif;
+    font-size:1.1rem; font-weight:700; cursor:pointer; transition:opacity 0.2s;
+  }
+  .lock-btn:hover { opacity:0.88; }
+  .lock-error { color:var(--coral); margin-top:10px; font-size:0.9rem; font-weight:700; }
+  .view-only-btn {
+    margin-top:12px; background:none; border:none; color:var(--muted);
+    font-family:'Nunito',sans-serif; cursor:pointer; font-size:0.95rem; text-decoration:underline;
+  }
+
+  /* ─── Header ─── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,248,240,0.85); backdrop-filter: blur(12px);
+    border-bottom: 2px solid rgba(0,0,0,0.05);
+    padding: 14px 28px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .logo { font-family:'Pacifico',cursive; font-size:1.6rem;
+    background:linear-gradient(90deg,var(--coral),var(--purple),var(--teal));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; white-space:nowrap; }
+  .header-tabs { display:flex; gap:8px; background:#F0E8FF; border-radius:40px; padding:5px; }
+  .tab-btn {
+    padding:8px 22px; border:none; border-radius:40px; font-family:'Nunito',sans-serif;
+    font-size:0.95rem; font-weight:700; cursor:pointer; background:transparent;
+    color:#888; transition:all 0.25s;
+  }
+  .tab-btn.active { background:white; color:var(--purple); box-shadow:0 2px 12px rgba(171,71,188,0.18); }
+  .header-spacer { flex:1; }
+  .header-actions { display:flex; gap:10px; align-items:center; }
+  .icon-btn {
+    width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:1.2rem;
+    transition:transform 0.2s, background 0.2s;
+  }
+  .icon-btn:hover { transform:scale(1.1); }
+  .btn-add  { background:linear-gradient(135deg,var(--green),var(--teal)); color:white; }
+  .btn-save { background:linear-gradient(135deg,var(--blue),var(--indigo)); color:white; }
+  .btn-cog  { background:#F0E8FF; color:var(--purple); }
+  .edit-badge {
+    background:linear-gradient(135deg,var(--coral),var(--pink));
+    color:white; padding:5px 14px; border-radius:40px; font-size:0.82rem; font-weight:800;
+  }
+
+  /* ─── Main Views ─── */
+  #app { position:relative; z-index:1; }
+  .view { display:none; }
+  .view.active { display:block; }
+
+  /* ─── TREE VIEW ─── */
+  #treeView {
+    position: relative; overflow: hidden;
+    height: calc(100vh - 68px);
+  }
+  #treeContainer {
+    position: absolute; transform-origin: 0 0;
+    will-change: transform; cursor: grab;
+  }
+  #treeContainer:active { cursor: grabbing; }
+  #treeSvg {
+    position: absolute; top:0; left:0; width:100%; height:100%;
+    pointer-events: none; overflow: visible;
+  }
+  .person-node {
+    position: absolute; width: 150px;
+    background: white; border-radius: 18px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+    padding: 14px 12px; text-align: center;
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    border-top: 5px solid var(--coral);
+    user-select: none;
+  }
+  .person-node:hover { transform: translateY(-4px); box-shadow:0 12px 36px rgba(0,0,0,0.15); }
+  .node-avatar {
+    width:52px; height:52px; border-radius:50%; margin:0 auto 8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.6rem; color:white;
+  }
+  .node-name { font-weight:800; font-size:0.88rem; line-height:1.2; }
+  .node-years { font-size:0.75rem; color:var(--muted); margin-top:3px; }
+  .node-relation { font-size:0.72rem; margin-top:4px; font-weight:700; padding:2px 8px; border-radius:20px; display:inline-block; }
+
+  /* Zoom controls */
+  .zoom-controls {
+    position:absolute; bottom:24px; right:24px; z-index:10;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .zoom-btn {
+    width:42px; height:42px; border-radius:50%; border:none; background:white;
+    box-shadow:var(--shadow); font-size:1.4rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Nunito',sans-serif; font-weight:700;
+    transition:transform 0.15s;
+  }
+  .zoom-btn:hover { transform:scale(1.1); }
+
+  /* Empty state */
+  .empty-state {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    height:100%; gap:16px; color:var(--muted);
+  }
+  .empty-state .empty-icon { font-size:5rem; }
+  .empty-state h2 { font-family:'Pacifico',cursive; font-size:1.8rem; color:var(--purple); }
+  .empty-state p { font-size:1rem; text-align:center; max-width:320px; }
+
+  /* ─── TIMELINE VIEW ─── */
+  #timelineView {
+    padding: 32px 24px;
+    max-width: 800px; margin: 0 auto;
+    overflow-y: auto; height: calc(100vh - 68px);
+  }
+  .timeline-title {
+    font-family:'Pacifico',cursive; font-size:1.8rem; text-align:center; margin-bottom:8px;
+    background:linear-gradient(90deg,var(--coral),var(--purple));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .timeline-subtitle { text-align:center; color:var(--muted); margin-bottom:40px; font-size:1rem; }
+  .timeline-line-wrap { position:relative; padding: 0 0 32px; }
+  .timeline-axis {
+    position:absolute; left:50%; top:0; bottom:0;
+    width:4px; background:linear-gradient(180deg,var(--coral),var(--purple),var(--teal));
+    border-radius:4px; transform:translateX(-50%);
+  }
+  .timeline-item {
+    display:flex; align-items:flex-start; margin-bottom:32px; position:relative;
+  }
+  .timeline-item.left  { flex-direction:row-reverse; }
+  .timeline-item.right { flex-direction:row; }
+  .tl-card {
+    background:white; border-radius:18px; padding:18px 20px;
+    box-shadow:var(--shadow); width:calc(50% - 40px);
+    border-left:5px solid var(--coral); transition:transform 0.2s;
+    cursor:pointer;
+  }
+  .tl-card:hover { transform:translateY(-3px); }
+  .timeline-item.left .tl-card { border-left:none; border-right:5px solid var(--teal); }
+  .tl-year {
+    position:absolute; left:50%; transform:translateX(-50%);
+    background:white; border:3px solid var(--purple); color:var(--purple);
+    border-radius:40px; padding:3px 12px; font-weight:800; font-size:0.85rem;
+    white-space:nowrap; box-shadow:0 2px 8px rgba(171,71,188,0.18);
+    top: 14px;
+  }
+  .tl-card-header { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .tl-avatar {
+    width:38px; height:38px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.2rem; color:white; flex-shrink:0;
+  }
+  .tl-name { font-weight:800; font-size:1rem; }
+  .tl-meta { font-size:0.82rem; color:var(--muted); }
+  .tl-note { font-size:0.88rem; margin-top:6px; color:#444; }
+
+  /* ─── Modal ─── */
+  .modal-overlay {
+    display:none; position:fixed; inset:0; z-index:500;
+    background:rgba(0,0,0,0.4); backdrop-filter:blur(4px);
+    align-items:center; justify-content:center;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:white; border-radius:28px; padding:36px; width:92%; max-width:540px;
+    max-height:90vh; overflow-y:auto; box-shadow:0 24px 80px rgba(0,0,0,0.22);
+    animation: popIn 0.25s cubic-bezier(.17,.67,.35,1.2);
+  }
+  @keyframes popIn { from{transform:scale(0.88) translateY(20px); opacity:0} to{transform:scale(1) translateY(0); opacity:1} }
+  .modal h2 { font-family:'Pacifico',cursive; font-size:1.5rem; margin-bottom:24px;
+    background:linear-gradient(90deg,var(--coral),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  label { font-weight:700; font-size:0.88rem; color:var(--muted); }
+  input[type=text], input[type=number], input[type=password], select, textarea {
+    padding:12px 14px; border:2px solid #eee; border-radius:12px;
+    font-family:'Nunito',sans-serif; font-size:1rem; outline:none; transition:border-color 0.2s;
+    width:100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color:var(--purple); }
+  textarea { resize:vertical; min-height:70px; }
+  .multi-select-box { border:2px solid #eee; border-radius:12px; max-height:130px; overflow-y:auto; }
+  .multi-select-box label { display:flex; align-items:center; gap:8px; padding:8px 12px;
+    font-weight:600; font-size:0.92rem; color:var(--text); cursor:pointer; }
+  .multi-select-box label:hover { background:#F9F0FF; }
+  .modal-actions { display:flex; gap:10px; margin-top:24px; }
+  .btn { padding:12px 24px; border-radius:40px; border:none; font-family:'Nunito',sans-serif;
+    font-size:1rem; font-weight:700; cursor:pointer; transition:opacity 0.2s, transform 0.15s; }
+  .btn:hover { opacity:0.88; transform:scale(1.02); }
+  .btn-primary { background:linear-gradient(135deg,var(--coral),var(--purple)); color:white; flex:1; }
+  .btn-secondary { background:#F0E8FF; color:var(--purple); }
+  .btn-danger { background:linear-gradient(135deg,#FF6B6B,#FF4444); color:white; }
+
+  /* ─── Settings Modal ─── */
+  .settings-section { margin-bottom:24px; }
+  .settings-section h3 { font-weight:800; font-size:1rem; margin-bottom:12px; color:var(--purple); }
+  .settings-info { font-size:0.85rem; color:var(--muted); margin-bottom:10px; line-height:1.5; }
+  .copy-token-tip {
+    background:#FFF9E6; border-left:4px solid var(--amber); padding:10px 14px;
+    border-radius:0 10px 10px 0; font-size:0.85rem; color:#7a5c00; margin-top:8px;
+  }
+
+  /* ─── Toast ─── */
+  #toast {
+    position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px);
+    background:#2D2D2D; color:white; padding:12px 24px; border-radius:40px;
+    font-weight:700; font-size:0.95rem; z-index:999; transition:transform 0.3s;
+    pointer-events:none;
+  }
+  #toast.show { transform:translateX(-50%) translateY(0); }
+
+  /* ─── Person detail panel ─── */
+  #detailPanel {
+    position:fixed; right:0; top:68px; bottom:0; width:300px;
+    background:white; box-shadow:-4px 0 24px rgba(0,0,0,0.10);
+    z-index:200; transform:translateX(100%); transition:transform 0.3s;
+    overflow-y:auto; padding:24px;
+  }
+  #detailPanel.open { transform:translateX(0); }
+  .detail-close { float:right; background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--muted); }
+  .detail-avatar {
+    width:80px; height:80px; border-radius:50%; margin:8px auto 12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:2.5rem; color:white;
+  }
+  .detail-name { font-family:'Pacifico',cursive; font-size:1.3rem; text-align:center;
+    background:linear-gradient(90deg,var(--coral),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .detail-meta { text-align:center; color:var(--muted); font-size:0.9rem; margin-top:4px; }
+  .detail-section { margin-top:18px; }
+  .detail-section h4 { font-weight:800; font-size:0.88rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .detail-chip {
+    display:inline-block; background:#F0E8FF; color:var(--purple);
+    padding:4px 12px; border-radius:40px; font-size:0.85rem; font-weight:700;
+    margin:3px; cursor:pointer;
+  }
+  .detail-chip:hover { background:var(--purple); color:white; }
+  .detail-note { font-size:0.92rem; color:#444; line-height:1.6; background:#FFF8F0; padding:12px; border-radius:12px; }
+  .detail-actions { display:flex; gap:8px; margin-top:20px; }
+
+  /* ─── Spinner ─── */
+  .spinner { width:20px; height:20px; border:3px solid rgba(255,255,255,0.4); border-top-color:white;
+    border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:#ddd; border-radius:4px; }
+</style>
+</head>
+<body>
+
+<!-- Background Blobs -->
+<div class="blob-bg">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+
+<!-- Lock Screen -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <div style="font-size:3rem;margin-bottom:8px;">🌳</div>
+    <h1>Family Tree</h1>
+    <p>Enter password to edit, or view as guest</p>
+    <input class="lock-input" type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <button class="lock-btn" onclick="tryUnlock()">Unlock to Edit</button>
+    <div class="lock-error" id="lockError"></div>
+    <button class="view-only-btn" onclick="enterViewOnly()">Just browse (view only)</button>
+  </div>
+</div>
+
+<!-- Header -->
+<header id="appHeader" style="display:none;">
+  <div class="logo">🌳 Family Tree</div>
+  <div class="header-tabs">
+    <button class="tab-btn active" onclick="switchView('tree')" id="tabTree">🌿 Tree</button>
+    <button class="tab-btn" onclick="switchView('timeline')" id="tabTimeline">📅 Timeline</button>
+  </div>
+  <div class="header-spacer"></div>
+  <div class="header-actions" id="headerActions">
+    <!-- filled by JS -->
+  </div>
+</header>
+
+<!-- App -->
+<div id="app" style="display:none;">
+
+  <!-- Tree View -->
+  <div id="treeView" class="view active">
+    <svg id="treeSvg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;"></svg>
+    <div id="treeContainer"></div>
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoom(0.15)" title="Zoom In">+</button>
+      <button class="zoom-btn" onclick="zoom(-0.15)" title="Zoom Out">−</button>
+      <button class="zoom-btn" onclick="resetView()" title="Reset" style="font-size:1rem;">⟳</button>
+    </div>
+  </div>
+
+  <!-- Timeline View -->
+  <div id="timelineView" class="view">
+    <p class="timeline-title">Family Timeline</p>
+    <p class="timeline-subtitle">Births and milestones through the generations</p>
+    <div class="timeline-line-wrap">
+      <div class="timeline-axis"></div>
+      <div id="timelineItems"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Person Detail Panel -->
+<div id="detailPanel">
+  <button class="detail-close" onclick="closeDetail()">✕</button>
+  <div id="detailContent"></div>
+</div>
+
+<!-- Add/Edit Person Modal -->
+<div class="modal-overlay" id="personModal">
+  <div class="modal">
+    <h2 id="modalTitle">Add Person</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="fName" placeholder="e.g. Ramesh Sharma">
+      </div>
+      <div class="form-group">
+        <label>Nickname / Relation</label>
+        <input type="text" id="fNickname" placeholder="e.g. Dada, Nani">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Gender</label>
+        <select id="fGender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Birth Year</label>
+        <input type="number" id="fBirthYear" placeholder="e.g. 1945" min="1800" max="2025">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Death Year (if applicable)</label>
+        <input type="number" id="fDeathYear" placeholder="Leave blank if alive" min="1800" max="2025">
+      </div>
+      <div class="form-group">
+        <label>Birth Place</label>
+        <input type="text" id="fBirthPlace" placeholder="e.g. Mumbai">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Parents (select from list)</label>
+      <div class="multi-select-box" id="fParentsList"></div>
+    </div>
+    <div class="form-group">
+      <label>Spouse(s) (select from list)</label>
+      <div class="multi-select-box" id="fSpousesList"></div>
+    </div>
+    <div class="form-group">
+      <label>Notes / Story</label>
+      <textarea id="fNotes" placeholder="Any interesting story, profession, memories..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closePersonModal()">Cancel</button>
+      <button class="btn btn-danger" id="deletePersonBtn" onclick="deletePerson()" style="display:none;">Delete</button>
+      <button class="btn btn-primary" onclick="savePerson()">Save Person</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <h2>⚙️ Settings</h2>
+
+    <div class="settings-section">
+      <h3>🔐 Change Password</h3>
+      <div class="form-group">
+        <label>New Edit Password</label>
+        <input type="password" id="sNewPw" placeholder="Enter new password">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="sConfirmPw" placeholder="Confirm new password">
+      </div>
+      <button class="btn btn-secondary" onclick="changePassword()">Update Password</button>
+    </div>
+
+    <div class="settings-section">
+      <h3>🐙 GitHub Auto-Save</h3>
+      <p class="settings-info">When configured, every save will automatically commit <code>family.json</code> to your GitHub repo — so your data is always backed up.</p>
+      <div class="form-group">
+        <label>GitHub Username</label>
+        <input type="text" id="sGhUser" placeholder="your-username">
+      </div>
+      <div class="form-group">
+        <label>Repository Name</label>
+        <input type="text" id="sGhRepo" placeholder="family-tree">
+      </div>
+      <div class="form-group">
+        <label>Branch</label>
+        <input type="text" id="sGhBranch" placeholder="main">
+      </div>
+      <div class="form-group">
+        <label>Personal Access Token</label>
+        <input type="password" id="sGhToken" placeholder="ghp_...">
+        <div class="copy-token-tip">
+          💡 Create a token at GitHub → Settings → Developer Settings → Personal Access Tokens → Fine-grained tokens. Give it <strong>Contents: Read & Write</strong> permission on your repo.
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveGitHubSettings()">Save GitHub Settings</button>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeSettings()">Close</button>
+      <button class="btn btn-danger" onclick="exportJSON()">⬇️ Export JSON</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CONFIGURATION  –  change PASSWORD here if you want
+// ═══════════════════════════════════════════════════════
+const DEFAULT_PASSWORD = "family2024"; // ← change this in your repo
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let state = {
+  isEditor: false,
+  data: { familyName: "Our Family", people: [] },
+  currentView: 'tree',
+  editingId: null,
+  zoom: 1,
+  panX: 40,
+  panY: 40,
+  dragging: false,
+  lastX: 0, lastY: 0,
+};
+
+const GEN_COLORS = [
+  '#FF6B6B','#AB47BC','#42A5F5','#26C6DA','#66BB6A',
+  '#FFCA28','#EC407A','#5C6BC0','#FF7043','#26A69A'
+];
+const MALE_EMOJI   = '👨';
+const FEMALE_EMOJI = '👩';
+const OTHER_EMOJI  = '🧑';
+
+function genEmoji(g) { return g==='male'?MALE_EMOJI:g==='female'?FEMALE_EMOJI:OTHER_EMOJI; }
+
+// ═══════════════════════════════════════════════════════
+//  PASSWORD / AUTH
+// ═══════════════════════════════════════════════════════
+function getPassword() {
+  return localStorage.getItem('famTree_pw') || DEFAULT_PASSWORD;
+}
+
+function tryUnlock() {
+  const val = document.getElementById('pwInput').value;
+  if (val === getPassword()) {
+    state.isEditor = true;
+    enterApp();
+  } else {
+    document.getElementById('lockError').textContent = '❌ Wrong password. Try again.';
+  }
+}
+
+function enterViewOnly() {
+  state.isEditor = false;
+  enterApp();
+}
+
+function enterApp() {
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('appHeader').style.display = 'flex';
+  document.getElementById('app').style.display = 'block';
+  renderHeaderActions();
+  loadData();
+}
+
+function changePassword() {
+  const np = document.getElementById('sNewPw').value;
+  const cp = document.getElementById('sConfirmPw').value;
+  if (!np) return toast('Enter a new password');
+  if (np !== cp) return toast('Passwords do not match');
+  localStorage.setItem('famTree_pw', np);
+  toast('✅ Password updated!');
+}
+
+// ═══════════════════════════════════════════════════════
+//  DATA LOADING
+// ═══════════════════════════════════════════════════════
+async function loadData() {
+  // Try to load from family.json in same directory
+  try {
+    const res = await fetch('family.json?_=' + Date.now());
+    if (res.ok) {
+      state.data = await res.json();
+      render();
+      return;
+    }
+  } catch(e) {}
+  // Fallback: load from localStorage or use sample
+  const saved = localStorage.getItem('famTree_data');
+  if (saved) {
+    state.data = JSON.parse(saved);
+  } else {
+    state.data = getSampleData();
+  }
+  render();
+}
+
+function getSampleData() {
+  return {
+    familyName: "Our Family",
+    people: [
+      {id:"p1",name:"Great Grandfather",nickname:"Pardada",gender:"male",birthYear:1905,deathYear:1972,birthPlace:"Pune",parentIds:[],spouseIds:["p2"],notes:"The family patriarch, a farmer."},
+      {id:"p2",name:"Great Grandmother",nickname:"Pardadi",gender:"female",birthYear:1910,deathYear:1978,birthPlace:"Nashik",parentIds:[],spouseIds:["p1"],notes:"Known for her amazing cooking."},
+      {id:"p3",name:"Grandfather",nickname:"Dada",gender:"male",birthYear:1935,deathYear:2005,birthPlace:"Pune",parentIds:["p1","p2"],spouseIds:["p4"],notes:"Started the family business."},
+      {id:"p4",name:"Grandmother",nickname:"Dadi",gender:"female",birthYear:1938,birthPlace:"Mumbai",parentIds:[],spouseIds:["p3"],notes:"Loved gardening and telling stories."},
+      {id:"p5",name:"Father",nickname:"Papa",gender:"male",birthYear:1962,birthPlace:"Pune",parentIds:["p3","p4"],spouseIds:["p6"],notes:""},
+      {id:"p6",name:"Mother",nickname:"Mama",gender:"female",birthYear:1965,birthPlace:"Nagpur",parentIds:[],spouseIds:["p5"],notes:""},
+      {id:"p7",name:"Me",nickname:"",gender:"male",birthYear:1990,birthPlace:"Pune",parentIds:["p5","p6"],spouseIds:[],notes:"The one building this tree! 🌳"},
+    ]
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+//  SAVE
+// ═══════════════════════════════════════════════════════
+function saveLocal() {
+  localStorage.setItem('famTree_data', JSON.stringify(state.data));
+}
+
+async function saveToGitHub() {
+  const user  = localStorage.getItem('gh_user');
+  const repo  = localStorage.getItem('gh_repo');
+  const branch= localStorage.getItem('gh_branch') || 'main';
+  const token = localStorage.getItem('gh_token');
+
+  if (!user || !repo || !token) {
+    toast('⚠️ Configure GitHub settings first (⚙️ icon)');
+    return false;
+  }
+
+  const btn = document.getElementById('saveBtn');
+  if (btn) btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    // Get current file SHA (needed for update)
+    const url = `https://api.github.com/repos/${user}/${repo}/contents/family.json`;
+    const headers = {
+      'Authorization': `token ${token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.github.v3+json'
+    };
+
+    let sha = null;
+    try {
+      const r = await fetch(url, { headers });
+      if (r.ok) { const j = await r.json(); sha = j.sha; }
+    } catch(e) {}
+
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(state.data, null, 2))));
+    const body = {
+      message: `💾 Update family tree – ${new Date().toLocaleString()}`,
+      content,
+      branch,
+      ...(sha ? { sha } : {})
+    };
+
+    const res = await fetch(url, { method:'PUT', headers, body: JSON.stringify(body) });
+    if (res.ok) {
+      toast('✅ Saved to GitHub!');
+      if (btn) btn.innerHTML = '💾';
+      return true;
+    } else {
+      const err = await res.json();
+      toast('❌ GitHub error: ' + (err.message || 'Unknown'));
+      if (btn) btn.innerHTML = '💾';
+      return false;
+    }
+  } catch(e) {
+    toast('❌ Save failed: ' + e.message);
+    if (btn) btn.innerHTML = '💾';
+    return false;
+  }
+}
+
+async function handleSave() {
+  saveLocal();
+  await saveToGitHub();
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state.data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'family.json'; a.click();
+  toast('⬇️ family.json downloaded!');
+}
+
+// ═══════════════════════════════════════════════════════
+//  TREE ALGORITHM
+// ═══════════════════════════════════════════════════════
+function computeGenerations(people) {
+  const map = {};
+  people.forEach(p => map[p.id] = p);
+  const gens = {};
+
+  // Find people who have parents IN the dataset
+  function hasKnownParent(p) {
+    return p.parentIds && p.parentIds.some(pid => map[pid]);
+  }
+
+  const roots = people.filter(p => !hasKnownParent(p));
+
+  // BFS
+  const queue = roots.map(r => ({id: r.id, gen: 0}));
+  const visited = new Set();
+  while (queue.length) {
+    const {id, gen} = queue.shift();
+    if (visited.has(id)) { gens[id] = Math.max(gens[id]||0, gen); continue; }
+    visited.add(id);
+    gens[id] = gen;
+    // children
+    people.forEach(p => {
+      if (p.parentIds && p.parentIds.includes(id)) {
+        queue.push({id: p.id, gen: gen+1});
+      }
+    });
+  }
+
+  // Spouses: same gen as partner
+  people.forEach(p => {
+    if (gens[p.id] === undefined) {
+      for (const sid of (p.spouseIds||[])) {
+        if (gens[sid] !== undefined) { gens[p.id] = gens[sid]; break; }
+      }
+    }
+    if (gens[p.id] === undefined) gens[p.id] = 0;
+  });
+
+  return gens;
+}
+
+function layoutTree(people) {
+  if (!people.length) return {};
+  const gens = computeGenerations(people);
+
+  // Group by generation
+  const genGroups = {};
+  people.forEach(p => {
+    const g = gens[p.id];
+    if (!genGroups[g]) genGroups[g] = [];
+    genGroups[g].push(p);
+  });
+
+  const NODE_W = 160, NODE_H = 100, H_GAP = 24, V_GAP = 90;
+  const positions = {};
+
+  const genKeys = Object.keys(genGroups).map(Number).sort((a,b)=>a-b);
+  genKeys.forEach(g => {
+    const group = genGroups[g];
+    const total = group.length * NODE_W + (group.length-1) * H_GAP;
+    let x = -total/2 + 500; // center around 500
+    group.forEach(p => {
+      positions[p.id] = { x, y: g * (NODE_H + V_GAP) + 40, gen: g };
+      x += NODE_W + H_GAP;
+    });
+  });
+
+  return positions;
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════
+function render() {
+  if (state.currentView === 'tree') renderTree();
+  else renderTimeline();
+}
+
+function renderTree() {
+  const container = document.getElementById('treeContainer');
+  const svg = document.getElementById('treeSvg');
+  const people = state.data.people || [];
+
+  if (!people.length) {
+    container.innerHTML = `<div class="empty-state" style="position:absolute;inset:0;">
+      <div class="empty-icon">🌱</div>
+      <h2>Start your family tree</h2>
+      <p>Click the <strong>+</strong> button to add the first family member!</p>
+    </div>`;
+    svg.innerHTML = '';
+    updateTreeTransform();
+    return;
+  }
+
+  const positions = layoutTree(people);
+  const map = {};
+  people.forEach(p => map[p.id] = p);
+
+  // Find canvas size
+  const xs = Object.values(positions).map(p=>p.x);
+  const ys = Object.values(positions).map(p=>p.y);
+  const maxX = Math.max(...xs) + 200;
+  const maxY = Math.max(...ys) + 140;
+
+  container.style.width  = maxX + 'px';
+  container.style.height = maxY + 'px';
+
+  // Render nodes
+  let nodesHTML = '';
+  people.forEach(p => {
+    const pos = positions[p.id];
+    if (!pos) return;
+    const color = GEN_COLORS[pos.gen % GEN_COLORS.length];
+    const years = p.birthYear ? `${p.birthYear}${p.deathYear ? ' – '+p.deathYear : ''}` : '';
+    nodesHTML += `
+      <div class="person-node" id="node-${p.id}"
+        style="left:${pos.x}px;top:${pos.y}px;border-top-color:${color};"
+        onclick="showDetail('${p.id}')">
+        <div class="node-avatar" style="background:${color};">${genEmoji(p.gender)}</div>
+        <div class="node-name">${p.name}</div>
+        ${p.nickname ? `<div class="node-relation" style="background:${color}22;color:${color};">${p.nickname}</div>` : ''}
+        <div class="node-years">${years}</div>
+      </div>`;
+  });
+  container.innerHTML = nodesHTML;
+
+  // Render SVG lines
+  let paths = '';
+  people.forEach(p => {
+    const pos = positions[p.id];
+    if (!pos) return;
+    const color = GEN_COLORS[pos.gen % GEN_COLORS.length];
+
+    // Parent → child lines
+    const NODE_W = 160, NODE_H = 100;
+    (p.parentIds||[]).forEach(pid => {
+      const ppos = positions[pid];
+      if (!ppos) return;
+      const x1 = ppos.x + NODE_W/2;
+      const y1 = ppos.y + NODE_H;
+      const x2 = pos.x + NODE_W/2;
+      const y2 = pos.y;
+      const cy = (y1+y2)/2;
+      paths += `<path d="M${x1},${y1} C${x1},${cy} ${x2},${cy} ${x2},${y2}"
+        stroke="${color}" stroke-width="2.5" fill="none" opacity="0.6"
+        stroke-dasharray="6,3" />`;
+    });
+
+    // Spouse lines
+    (p.spouseIds||[]).forEach(sid => {
+      if (sid < p.id) return; // draw once
+      const spos = positions[sid];
+      if (!spos) return;
+      const x1 = pos.x + NODE_W;
+      const y1 = pos.y + NODE_H/2;
+      const x2 = spos.x;
+      const y2 = spos.y + NODE_H/2;
+      paths += `<path d="M${x1},${y1} L${x2},${y2}"
+        stroke="#EC407A" stroke-width="2" fill="none" stroke-dasharray="4,3" opacity="0.7" />
+        <text x="${(x1+x2)/2}" y="${(y1+y2)/2-5}" text-anchor="middle" font-size="14">💕</text>`;
+    });
+  });
+
+  svg.innerHTML = paths;
+  updateTreeTransform();
+}
+
+function renderTimeline() {
+  const people = (state.data.people||[])
+    .filter(p => p.birthYear)
+    .sort((a,b) => a.birthYear - b.birthYear);
+
+  const gens = computeGenerations(state.data.people||[]);
+  const container = document.getElementById('timelineItems');
+
+  if (!people.length) {
+    container.innerHTML = '<p style="text-align:center;color:var(--muted);padding:40px;">No people with birth years yet.</p>';
+    return;
+  }
+
+  container.innerHTML = people.map((p, i) => {
+    const gen = gens[p.id] ?? 0;
+    const color = GEN_COLORS[gen % GEN_COLORS.length];
+    const side = i % 2 === 0 ? 'left' : 'right';
+    const years = `${p.birthYear}${p.deathYear ? ' – ' + p.deathYear : (p.birthYear ? ' – present' : '')}`;
+    return `
+      <div class="timeline-item ${side}" onclick="showDetail('${p.id}')">
+        <div class="tl-card" style="border-${side==='left'?'right':'left'}-color:${color};">
+          <div class="tl-card-header">
+            <div class="tl-avatar" style="background:${color};">${genEmoji(p.gender)}</div>
+            <div>
+              <div class="tl-name">${p.name}</div>
+              <div class="tl-meta">${p.nickname ? p.nickname + ' · ' : ''}${p.birthPlace||''}</div>
+            </div>
+          </div>
+          ${p.notes ? `<div class="tl-note">${p.notes.substring(0,100)}${p.notes.length>100?'…':''}</div>` : ''}
+        </div>
+        <div class="tl-year">${years}</div>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  DETAIL PANEL
+// ═══════════════════════════════════════════════════════
+function showDetail(id) {
+  const map = {};
+  (state.data.people||[]).forEach(p => map[p.id] = p);
+  const p = map[id];
+  if (!p) return;
+
+  const gens = computeGenerations(state.data.people||[]);
+  const color = GEN_COLORS[(gens[p.id]??0) % GEN_COLORS.length];
+  const years = p.birthYear ? `${p.birthYear}${p.deathYear ? ' – '+p.deathYear : ' – present'}` : '';
+
+  const parents  = (p.parentIds||[]).map(pid => map[pid]).filter(Boolean);
+  const spouses  = (p.spouseIds||[]).map(sid => map[sid]).filter(Boolean);
+  const children = (state.data.people||[]).filter(q => (q.parentIds||[]).includes(id));
+  const siblings = (state.data.people||[]).filter(q =>
+    q.id !== id && (q.parentIds||[]).some(pid => (p.parentIds||[]).includes(pid)));
+
+  const chipsHTML = (arr, label) => arr.length ? `
+    <div class="detail-section">
+      <h4>${label}</h4>
+      ${arr.map(x=>`<span class="detail-chip" onclick="showDetail('${x.id}')">${x.name}</span>`).join('')}
+    </div>` : '';
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-avatar" style="background:${color};">${genEmoji(p.gender)}</div>
+    <div class="detail-name">${p.name}</div>
+    <div class="detail-meta">${p.nickname || ''} ${years ? '· '+years : ''}</div>
+    ${p.birthPlace ? `<div class="detail-meta">📍 ${p.birthPlace}</div>` : ''}
+    ${p.notes ? `<div class="detail-section"><div class="detail-note">${p.notes}</div></div>` : ''}
+    ${chipsHTML(parents,  '👴 Parents')}
+    ${chipsHTML(spouses,  '💕 Spouse')}
+    ${chipsHTML(children, '👶 Children')}
+    ${chipsHTML(siblings, '👫 Siblings')}
+    ${state.isEditor ? `<div class="detail-actions">
+      <button class="btn btn-secondary" style="flex:1" onclick="openPersonModal('${p.id}')">✏️ Edit</button>
+    </div>` : ''}
+  `;
+
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════════
+//  PERSON MODAL
+// ═══════════════════════════════════════════════════════
+function openPersonModal(id) {
+  closeDetail();
+  state.editingId = id || null;
+  const isEdit = !!id;
+  document.getElementById('modalTitle').textContent = isEdit ? 'Edit Person' : 'Add Person';
+  document.getElementById('deletePersonBtn').style.display = isEdit ? 'inline-flex' : 'none';
+
+  const p = isEdit ? (state.data.people||[]).find(x=>x.id===id) : {};
+  if (!p && isEdit) return;
+
+  document.getElementById('fName').value      = p.name || '';
+  document.getElementById('fNickname').value  = p.nickname || '';
+  document.getElementById('fGender').value    = p.gender || 'male';
+  document.getElementById('fBirthYear').value = p.birthYear || '';
+  document.getElementById('fDeathYear').value = p.deathYear || '';
+  document.getElementById('fBirthPlace').value= p.birthPlace || '';
+  document.getElementById('fNotes').value     = p.notes || '';
+
+  // Populate parents and spouses multi-select
+  const others = (state.data.people||[]).filter(x => x.id !== id);
+  document.getElementById('fParentsList').innerHTML = others.map(o =>
+    `<label><input type="checkbox" value="${o.id}" ${(p.parentIds||[]).includes(o.id)?'checked':''}> ${o.name} ${o.nickname?'('+o.nickname+')':''}</label>`
+  ).join('') || '<p style="padding:10px;color:var(--muted);font-size:0.88rem;">No other people yet.</p>';
+
+  document.getElementById('fSpousesList').innerHTML = others.map(o =>
+    `<label><input type="checkbox" value="${o.id}" ${(p.spouseIds||[]).includes(o.id)?'checked':''}> ${o.name} ${o.nickname?'('+o.nickname+')':''}</label>`
+  ).join('') || '<p style="padding:10px;color:var(--muted);font-size:0.88rem;">No other people yet.</p>';
+
+  document.getElementById('personModal').classList.add('open');
+}
+
+function closePersonModal() {
+  document.getElementById('personModal').classList.remove('open');
+  state.editingId = null;
+}
+
+function getChecked(containerId) {
+  return [...document.getElementById(containerId).querySelectorAll('input[type=checkbox]:checked')]
+    .map(c => c.value);
+}
+
+function savePerson() {
+  const name = document.getElementById('fName').value.trim();
+  if (!name) { toast('Please enter a name'); return; }
+
+  const person = {
+    id: state.editingId || 'p' + Date.now(),
+    name,
+    nickname:  document.getElementById('fNickname').value.trim(),
+    gender:    document.getElementById('fGender').value,
+    birthYear: parseInt(document.getElementById('fBirthYear').value) || null,
+    deathYear: parseInt(document.getElementById('fDeathYear').value) || null,
+    birthPlace:document.getElementById('fBirthPlace').value.trim(),
+    parentIds: getChecked('fParentsList'),
+    spouseIds: getChecked('fSpousesList'),
+    notes:     document.getElementById('fNotes').value.trim(),
+  };
+
+  if (state.editingId) {
+    const idx = state.data.people.findIndex(p=>p.id===state.editingId);
+    if (idx !== -1) state.data.people[idx] = person;
+  } else {
+    state.data.people.push(person);
+  }
+
+  // Sync spouse references (bidirectional)
+  (state.data.people||[]).forEach(p => {
+    if (p.id === person.id) return;
+    const shouldBeSpouse = person.spouseIds.includes(p.id);
+    const isSpouse = (p.spouseIds||[]).includes(person.id);
+    if (shouldBeSpouse && !isSpouse) p.spouseIds = [...(p.spouseIds||[]), person.id];
+    if (!shouldBeSpouse && isSpouse) p.spouseIds = p.spouseIds.filter(s=>s!==person.id);
+  });
+
+  saveLocal();
+  closePersonModal();
+  render();
+  toast(state.editingId ? '✅ Person updated!' : '✅ Person added!');
+}
+
+function deletePerson() {
+  if (!state.editingId) return;
+  if (!confirm('Remove this person from the tree?')) return;
+  const id = state.editingId;
+  state.data.people = state.data.people.filter(p => p.id !== id);
+  // Remove references
+  state.data.people.forEach(p => {
+    p.parentIds = (p.parentIds||[]).filter(x=>x!==id);
+    p.spouseIds = (p.spouseIds||[]).filter(x=>x!==id);
+  });
+  saveLocal();
+  closePersonModal();
+  render();
+  toast('🗑️ Person removed');
+}
+
+// ═══════════════════════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════════════════════
+function openSettings() {
+  document.getElementById('sGhUser').value   = localStorage.getItem('gh_user') || '';
+  document.getElementById('sGhRepo').value   = localStorage.getItem('gh_repo') || '';
+  document.getElementById('sGhBranch').value = localStorage.getItem('gh_branch') || 'main';
+  document.getElementById('sGhToken').value  = localStorage.getItem('gh_token') || '';
+  document.getElementById('settingsModal').classList.add('open');
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('open');
+}
+
+function saveGitHubSettings() {
+  localStorage.setItem('gh_user',   document.getElementById('sGhUser').value.trim());
+  localStorage.setItem('gh_repo',   document.getElementById('sGhRepo').value.trim());
+  localStorage.setItem('gh_branch', document.getElementById('sGhBranch').value.trim()||'main');
+  localStorage.setItem('gh_token',  document.getElementById('sGhToken').value.trim());
+  toast('✅ GitHub settings saved!');
+}
+
+// ═══════════════════════════════════════════════════════
+//  HEADER ACTIONS
+// ═══════════════════════════════════════════════════════
+function renderHeaderActions() {
+  const container = document.getElementById('headerActions');
+  if (state.isEditor) {
+    container.innerHTML = `
+      <span class="edit-badge">✏️ Edit Mode</span>
+      <button class="icon-btn btn-add" onclick="openPersonModal()" title="Add Person">+</button>
+      <button class="icon-btn btn-save" id="saveBtn" onclick="handleSave()" title="Save to GitHub">💾</button>
+      <button class="icon-btn btn-cog" onclick="openSettings()" title="Settings">⚙️</button>
+    `;
+  } else {
+    container.innerHTML = `
+      <span style="color:var(--muted);font-size:0.9rem;">👁️ View Only</span>
+      <button class="icon-btn btn-cog" onclick="openSettings()" title="Settings">⚙️</button>
+    `;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  VIEW SWITCHING
+// ═══════════════════════════════════════════════════════
+function switchView(view) {
+  state.currentView = view;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(view+'View').classList.add('active');
+  document.getElementById('tab'+view.charAt(0).toUpperCase()+view.slice(1)).classList.add('active');
+  render();
+}
+
+// ═══════════════════════════════════════════════════════
+//  ZOOM / PAN
+// ═══════════════════════════════════════════════════════
+function zoom(delta) {
+  state.zoom = Math.min(2, Math.max(0.3, state.zoom + delta));
+  updateTreeTransform();
+}
+
+function resetView() {
+  state.zoom = 1; state.panX = 40; state.panY = 40;
+  updateTreeTransform();
+}
+
+function updateTreeTransform() {
+  const c = document.getElementById('treeContainer');
+  const svg = document.getElementById('treeSvg');
+  const t = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+  c.style.transform = t;
+  svg.style.transform = t;
+}
+
+// Pan by drag
+const tv = document.getElementById('treeView');
+tv.addEventListener('mousedown', e => {
+  if (e.target.closest('.person-node,.zoom-controls')) return;
+  state.dragging = true; state.lastX = e.clientX; state.lastY = e.clientY;
+});
+window.addEventListener('mousemove', e => {
+  if (!state.dragging) return;
+  state.panX += e.clientX - state.lastX;
+  state.panY += e.clientY - state.lastY;
+  state.lastX = e.clientX; state.lastY = e.clientY;
+  updateTreeTransform();
+});
+window.addEventListener('mouseup', () => state.dragging = false);
+
+// Scroll to zoom
+tv.addEventListener('wheel', e => {
+  e.preventDefault();
+  zoom(e.deltaY < 0 ? 0.08 : -0.08);
+}, {passive:false});
+
+// Touch pan
+let lastTouch = null;
+tv.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) lastTouch = {x: e.touches[0].clientX, y: e.touches[0].clientY};
+});
+tv.addEventListener('touchmove', e => {
+  if (e.touches.length === 1 && lastTouch) {
+    state.panX += e.touches[0].clientX - lastTouch.x;
+    state.panY += e.touches[0].clientY - lastTouch.y;
+    lastTouch = {x: e.touches[0].clientX, y: e.touches[0].clientY};
+    updateTreeTransform();
+  }
+});
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
