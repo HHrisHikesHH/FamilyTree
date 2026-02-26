@@ -1,17 +1,4 @@
 {
   "familyName": "Our Family",
-  "people": [
-    {
-      "id": "p1772093296555",
-      "name": "Hrishikesh",
-      "nickname": "Kalekinge",
-      "gender": "male",
-      "birthYear": 1997,
-      "deathYear": null,
-      "birthPlace": "Pune",
-      "parentIds": [],
-      "spouseIds": [],
-      "notes": ""
-    }
-  ]
+  "people": []
 }
